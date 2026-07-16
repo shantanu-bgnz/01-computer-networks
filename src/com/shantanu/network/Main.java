@@ -1,5 +1,9 @@
 package com.shantanu.network;
 
+import com.shantanu.network.http.HttpParser;
+import com.shantanu.network.http.Request;
+import com.shantanu.network.http.Router;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -28,6 +32,11 @@ public class Main {
             String line = reader.readLine();
 
             System.out.println("Received: " + line);
+            HttpParser parser = new HttpParser();
+            Request request = parser.parse(line);
+
+            Router router = new Router();
+            String body = router.route(request);
 
             OutputStream output = client.getOutputStream();
 
@@ -35,8 +44,7 @@ public class Main {
                     "HTTP/1.1 200 OK\r\n" +
                             "Content-Type: text/html\r\n" +
                             "\r\n" +
-                            "<h1>Hello Shantanu!</h1>";
-
+                            body;
             output.write(response.getBytes());
 
             output.flush();
